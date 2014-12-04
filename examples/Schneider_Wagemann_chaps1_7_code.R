@@ -86,7 +86,7 @@ S.data$not_raplib <- 1 - S.data$raplib
 
 #We print the two conditions and see that the vakues in column 2 are the values 
 #from column 1 subtracted from 1
-cbind(S.data$raplib, S.data$not_raplib)
+cbind(S.data$raplib, S.data$not_raplib) # 
 
 #We can also perform logical operations on complex Boolean expression
 #What is the negation of expression AC
@@ -105,28 +105,30 @@ deMorgan("WS + ES*WM + QU*LP + es*LP", prod.split = "*")
 FSC <- read.csv("FreitagSchlicht_2009_fs.csv", row.names = 1)
 head(FSC)
 
+names(FSC)[1] <- 'OUTCOME'
+
 #We use the pof function in the QCA package to figure out whether 
 # condition "lateeduc" is necessary for outcome "socunequal"
-pof(FSC$lateeduc, outcome = "socunequal", FSC, relation = "nec")
+pof(FSC$lateeduc, outcome = "OUTCOME", FSC, relation = "nec")
 #if we wanted to test if the negation of condition "lateeduc" is necessary
 #we write
-pof(1 - FSC$lateeduc, outcome = "socunequal", FSC, relation = "nec")
+pof(1 - FSC$lateeduc, outcome = "OUTCOME", FSC, relation = "nec")
 
 #We can also use the QCAfit function in the SetMethod package for the same purpose
 ##The advantage is that QCAfit reports one additional parameter of fit, an, I think,
 #improved measure of relevance of necessity (RoN)
-QCAfit(FSC$lateeduc, FSC$socunequal, necessity = TRUE)
-QCAfit(1- FSC$lateeduc, FSC$socunequal, necessity = TRUE)
+QCAfit(FSC$lateeduc, FSC$OUTCOME, necessity = TRUE)
+QCAfit(1- FSC$lateeduc, FSC$OUTCOME, necessity = TRUE)
 
 #IF we want to perform tests of necessity for each condition separately but in one command
 #line, we write
-QCAfit(FSC[, 3:5], FSC$socunequal, cond.lab = names(FSC)[ 3:5],  necessity = TRUE)
-QCAfit(1 - FSC[, 3:5], FSC$socunequal, cond.lab = paste('not', names(FSC)[ 3:5]),  necessity = TRUE)
+QCAfit(FSC[, 3:5], FSC$OUTCOME, cond.lab = names(FSC)[ 3:5],  necessity = TRUE)
+QCAfit(1 - FSC[, 3:5], FSC$OUTCOME, cond.lab = paste('not', names(FSC)[ 3:5]),  necessity = TRUE)
 
 #ANALYSIS OF SUFFICIENCY
 #If we have a hunch that a specific single condition is sufficient for the outcome
 # we can test it using pof. Let's try with condition "earlytrack"
-pof(FSC$earlytrack, outcome = "socunequal", FSC, relation = "suf")
+pof(FSC$earlytrack, outcome = "OUTCOME", FSC, relation = "suf")
 
 #if we think a specific combination of conditions is sufficient, we first need to 
 #create this combination and then use pof again
@@ -134,7 +136,7 @@ pof(FSC$earlytrack, outcome = "socunequal", FSC, relation = "suf")
 #call the new set Q and stack it into data set FSC
 FSC$Q <- pmin(FSC$lateeduc, FSC$earlytrack)
 
-pof(FSC$Q, outcome = "socunequal", FSC, relation = "suf")
+pof(FSC$Q, outcome = "OUTCOME", FSC, relation = "suf")
 
 
 ######
@@ -146,7 +148,7 @@ pof(FSC$Q, outcome = "socunequal", FSC, relation = "suf")
 #all logical possible combinations, i.e truth table rows.
 #So we first sort our data into a truth table and call it TT
 
-TT <- truthTable(FSC, outcome = "socunequal", 
+TT <- truthTable(FSC, outcome = "OUTCOME", 
                  conditions = c("lateeduc", "hdayschool", "earlytrack", "strongtripart"),
                  incl.cut1 = 0.8, complete = TRUE, show.cases = TRUE, sort.by = c("n", "incl"))
 #to see TT type
@@ -169,4 +171,4 @@ sol_i <-eqmcc(TT, details = TRUE, show.cases = TRUE, include = "?", dir.exp = c(
 sol_i
 #Which easy counterfactuals have been made
 sol_i$i.sol$C1P1$EC
-
+# END
